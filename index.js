@@ -1,13 +1,35 @@
+const isRule = rule => val => rule.test(val);
 
+/**
+ * 是对象
+ * @param {*} val 
+ */
+const isObject = val =>
+  typeof val === "function" || (typeof val === "object" && !!val);
 
-//校验空对象/空数组
-const isEmpty = val => val == null || !(Object.keys(val) || val).length;
+/**
+ * 空对象
+ * @param {*} val 
+ */
+const isEmptyObject = val => isObject(val) && JSON.stringify(val) == "{}";
+/**
+ * 判断是否为 null 或 undefined
+ * @param {*} val 
+ */
+const isEmpty = val => isNull(val) || isUndefined(val);
 
-//指定范围内的随机整数
+/**
+ * 指定范围内的随机整数
+ * @param {最小} min 
+ * @param {最大} max 
+ */
 const randomIntegerInRange = (min, max) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
-//url 参数序列化
+/**
+ * 获取url参数的对象
+ * @param {*} url 
+ */
 const getURLParameters = url =>
   (url.match(/([^?=&]+)(=([^&]*))/g) || []).reduce(
     (a, v) => (
@@ -16,14 +38,22 @@ const getURLParameters = url =>
     {}
   );
 
-//获取对象深层数据
+/**
+ * 获取对象深层次数据
+ * @param {*} obj 
+ * @param {*} keys 
+ */
 const deepGet = (obj, keys) =>
   keys.reduce(
     (xs, x) => (xs && xs[x] !== null && xs[x] !== undefined ? xs[x] : null),
     obj
   );
 
-//防抖
+/**
+ * 防抖
+ * @param {*} fn 
+ * @param {*} ms 
+ */
 const debounce = (fn, ms = 0) => {
   let timeoutId;
   return function (...args) {
@@ -32,7 +62,11 @@ const debounce = (fn, ms = 0) => {
   };
 };
 
-//节流
+/**
+ * 节流
+ * @param {执行函数} fn 
+ * @param {等待时间} wait 
+ */
 const throttle = (fn, wait) => {
   let inThrottle, lastFn, lastTime;
   return function () {
@@ -54,7 +88,10 @@ const throttle = (fn, wait) => {
   };
 };
 
-//深拷贝 对象/数组
+/**
+ * 
+ * @param {对象/数组的深拷贝} obj 
+ */
 const deepClone = obj => {
   if (obj === null) return null;
   let clone = Object.assign({}, obj);
@@ -70,7 +107,11 @@ const deepClone = obj => {
   return clone;
 };
 
-//时间戳格式化
+/**
+ * 
+ * @param {yyyy-MM-dd HH:mm:ss} formater 
+ * @param {时间戳} t 
+ */
 const dateFormater = (formater, t) => {
   let date = t ? new Date(t) : new Date(),
     Y = date.getFullYear() + '',
@@ -88,7 +129,11 @@ const dateFormater = (formater, t) => {
     .replace(/ss/g, (s < 10 ? '0' : '') + s)
 }
 
-//下载文件
+/**
+ * 文件下载
+ * @param {*} filename 
+ * @param {文件链接} data 
+ */
 const downloadFile = (filename, data) => {
   let DownloadLink = document.createElement('a');
 
@@ -113,6 +158,46 @@ const downloadFile = (filename, data) => {
   }
 }
 
+/**
+ * 倒计时
+ * @param {*}} ms 
+ * @param {*} cb 
+ */
+const countDown = (ms, cb) => {
+  // ms millisecond  cb callback
+  const timer = setInterval(() => {
+    ms--
+    if (ms < 1) {
+      clearInterval(timer) // 当倒计时为0时，清理定时器
+      cb(true, ms) // 执行回调函数
+      return
+    }
+    cb(false, ms)
+  }, 1000)
+  return timer // 返回timerID
+}
+
+/**
+ * 对象过滤
+ * @param {过滤对象} obj 
+ * @param {对象保留属性} keys 
+ */
+const filterKeys = (obj, keys = []) =>
+  Object.keys(obj).reduce((acc, key) => {
+    if (keys.includes(key)) {
+      acc[key] = obj[key];
+    }
+    return acc;
+  }, {});
+
+const isLink = isRule(
+  /((https|http|ftp|rtsp|mms)?:\/\/)(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?(([0-9]{1,3}\.){3}[0-9]{1,3}|([0-9a-z_!~*'()-]+\.)*([0-9a-z][0-9a-z-]{0,61})?[0-9a-z]\.[a-z]{2,6})(:[0-9]{1,4})?((\/?)|(\/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+\/?)/
+);
+const isEMail = isRule(
+  /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/
+);
+const isTel = isRule(/^(\+?0?86-?)?1(3|4|5|6|7|8|9)\d{9}$/)
+const isIdCard = isRule(/(^\d{15}$)|(^\d{17}([0-9xX])$)/);
 
 export {
   getURLParameters,
@@ -122,5 +207,13 @@ export {
   debounce,
   throttle,
   dateFormater,
-  downloadFile
+  downloadFile,
+  countDown,
+  filterKeys,
+  isLink,
+  isEMail,
+  isTel,
+  isIdCard,
+  isObject,
+  isEmptyObject
 }
