@@ -1,5 +1,8 @@
 const isRule = rule => val => rule.test(val);
-
+const isType = type => val =>
+  Object.prototype.toString.call(val) === `[object ${type}]`;
+const isNull = isType("Null");
+const isUndefined = isType("Undefined");
 /**
  * 是对象
  * @param {*} val 
